@@ -10,6 +10,8 @@ import os
 
 def plotme(hdf_data, data = None, **kwargs):
 
+    DESTROY
+
     data_to_use = hdf_data.data
     if data is not None:
         data_to_use = data
