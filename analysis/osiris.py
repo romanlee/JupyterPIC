@@ -26,12 +26,11 @@ import matplotlib.colors as colors
 import ipywidgets
 
 import ipywidgets as widgets
-#
 
 
-
+#-----------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------
 def execute(cmd):
-
     popen = subprocess.Popen(cmd, stdout=subprocess.PIPE, universal_newlines=True)
     for stdout_line in iter(popen.stdout.readline, ""):
         yield stdout_line
@@ -41,21 +40,60 @@ def execute(cmd):
         raise subprocess.CalledProcessError(return_code, cmd)
 
 
+#-----------------------------------------------------------------------------------------
+# combine h5 files from input path pin, put them into file specified by path pout
+# combine_h5_util_1d.py located in path specified by panal
+#-----------------------------------------------------------------------------------------
+def combine_h5_better( pin, pout, panal ):
+    print('combining h5 files')
+    for path in execute(["python", panal+"combine_h5_util_1d.py", pin, pout]):
+        IPython.display.clear_output(wait=True)
+        # print(path, end='')
+
+
+#-----------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------
+def combine_h5_1d(ex):
+    in_file = workdir + '/MS/FLD/' + ex + '/'
+    out_file = workdir + '/' + ex + '.h5'
+    for path in execute(["python", "/usr/local/osiris/combine_h5_util_1d.py", in_file, out_file]):
+        IPython.display.clear_output(wait=True)
+           # print(path, end='')
+
+
+#-----------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------
+def combine_h5_iaw_1d():
+    in_file = workdir + '/MS/DENSITY/ions/charge/'
+    out_file = workdir + '/ions.h5'
+    for path in execute(["python", "/usr/local/osiris/combine_h5_util_1d.py", in_file, out_file]):
+        IPython.display.clear_output(wait=True)
+        # print(path, end='')
+
+
+#-----------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------
+def combine_h5_2d(path, ex):
+    in_file = workdir + '/' + path + '/' + ex + '/'
+    out_file = workdir + '/' + ex + '.h5'
+    for path in execute(["python", "/usr/local/osiris/combine_h5_util_2d.py", in_file, out_file]):
+        IPython.display.clear_output(wait=True)
+        print(path, end='')
+
+
+#-----------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------
+def combine_h5_iaw_2d():
+    in_file = workdir + '/DIAG/IDen/'
+    out_file = workdir + '/ions.h5'
+    for path in execute(["python", "/usr/local/osiris/combine_h5_util_2d.py", in_file, out_file]):
+        print(path, end='')
+        IPython.display.clear_output(wait=True)
+
+
+#-----------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------
 def run_upic_es(rundir='',inputfile='pinput2'):
-
-    def combine_h5_2d(path, ex):
-        in_file = workdir + '/' + path + '/' + ex + '/'
-        out_file = workdir + '/' + ex + '.h5'
-        for path in execute(["python", "/usr/local/osiris/combine_h5_util_2d.py", in_file, out_file]):
-            IPython.display.clear_output(wait=True)
-            print(path, end='')
-
-    def combine_h5_iaw_2d():
-        in_file = workdir + '/DIAG/IDen/'
-        out_file = workdir + '/ions.h5'
-        for path in execute(["python", "/usr/local/osiris/combine_h5_util_2d.py", in_file, out_file]):
-            print(path, end='')
-            IPython.display.clear_output(wait=True)
 
     workdir = os.getcwd()
     workdir += '/' + rundir
@@ -97,21 +135,9 @@ def run_upic_es(rundir='',inputfile='pinput2'):
     return
 
 
+#-----------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------
 def runosiris(rundir='',inputfile='osiris-input.txt'):
-
-    def combine_h5_1d(ex):
-        in_file = workdir + '/MS/FLD/' + ex + '/'
-        out_file = workdir + '/' + ex + '.h5'
-        for path in execute(["python", "/usr/local/osiris/combine_h5_util_1d.py", in_file, out_file]):
-            IPython.display.clear_output(wait=True)
-#            print(path, end='')
-
-    def combine_h5_iaw_1d():
-        in_file = workdir + '/MS/DENSITY/ions/charge/'
-        out_file = workdir + '/ions.h5'
-        for path in execute(["python", "/usr/local/osiris/combine_h5_util_1d.py", in_file, out_file]):
-            IPython.display.clear_output(wait=True)
-#            print(path, end='')
 
     workdir = os.getcwd()
     workdir += '/' + rundir
@@ -150,6 +176,8 @@ def runosiris(rundir='',inputfile='osiris-input.txt'):
     return
 
 
+#-----------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------
 def runosiris_2d(rundir='',inputfile='osiris-input.txt'):
 
     def combine_h5_2d(ex):
@@ -209,6 +237,8 @@ def runosiris_2d(rundir='',inputfile='osiris-input.txt'):
     return
 
 
+#-----------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------
 def field(rundir='',dataset='e1',time=0,space=-1,
     xlim=[-1,-1],ylim=[-1,-1],zlim=[-1,-1],
     plotdata=[], **kwargs):
@@ -620,7 +650,7 @@ def plot_xt_arb(rundir, field='Ex',
 #
 
 
-def plot_xt(rundir, TITLE='', b0_mag=0.0, w_0 = 1.0, one_0 = 10, one_D= 790, n_peak = 2, plot_or=3, show_theory=False,
+def plot_xt(rundir='.', TITLE='', b0_mag=0.0, w_0 = 1.0, one_0 = 10, one_D= 790, n_peak = 2, plot_or=3, show_theory=False,
             xlim=[None,None], tlim=[None,None], **kwargs):
 
     # initialize values
@@ -660,7 +690,7 @@ def plot_xt(rundir, TITLE='', b0_mag=0.0, w_0 = 1.0, one_0 = 10, one_D= 790, n_p
         plt.legend(loc=4)
     plt.show()
 
-def plot_tx(rundir, TITLE='', b0_mag=0.0, plot_or=3, show_theory=False,
+def plot_tx(rundir='.', TITLE='', b0_mag=0.0, plot_or=3, show_theory=False,
             xlim=[None,None], tlim=[None,None], show_cutoff=False, w_0 = 1.0, one_0 = 10, one_D= 790, n_peak = 2, **kwargs):
 
     # initialize values
@@ -1371,31 +1401,31 @@ def zprime(z):
 
 
 def landau(karray):
-    
+
     nk=karray.shape[0]
-    
+
     results=np.zeros(nk)
     results_r = np.zeros(nk)
-    
+
     kmin=karray[0]
     kmax=karray[nk-1]
-    
+
     if (kmin!=0.0):
         root_trial=complex(1,0)
-        
+
         for k_val in np.arange(0.01,kmin,0.01):
             def epsilon(omega):
                 return 1-0.5*((1.0/k_val)**2)*zprime(omega/(np.sqrt(2)*k_val))
             newroot=mpmath.findroot(epsilon,root_trial,solver='muller')
             root_trial=newroot
-        
+
         results[0]=newroot.imag
     else:
         results[0]=0.0
         newroot=complex(1,0)
         root_trial=complex(1,0)
-    
-        
+
+
     for i_mode in range(1,nk):
         k_val=karray[i_mode]
         def epsilon(omega):
@@ -1404,7 +1434,7 @@ def landau(karray):
         root_trial=newroot
         results[i_mode]=newroot.imag
         results_r[i_mode] = newroot.real
-        
+
     return results, results_r
 
 
@@ -1659,10 +1689,10 @@ plt.rc('figure',titlesize=BIGGER_SIZE)
 def phasespace_movie(rundir):
 #2345
     import os
-    
-    
+
+
     def something(rundir,file_no):
-        
+
         my_path=os.getcwd()
         #print(my_path)
         working_dir=my_path+'/'+rundir
@@ -1672,17 +1702,17 @@ def phasespace_movie(rundir):
         ex_prefix='Ex-0_'
         phase_prefix='vx_x_'
         plt.figure(figsize=(12,6))
-        
+
         filename1=phase_space_dir+phase_prefix+repr(file_no).zfill(6)+'.h5'
         filename2=efield_dir+ex_prefix+repr(file_no).zfill(6)+'.h5'
-        
+
         #print(filename1)
         #print(filename2)
-        
+
         phase_space=np.abs(osh5io.read_h5(filename1))
         # print(repr(phase_space))
         ex=osh5io.read_h5(filename2)
-        
+
         phase_plot=plt.subplot(121)
         #print(repr(phase_space.axes[0].min))
         #print(repr(phase_space.axes[1].min))
@@ -1699,16 +1729,16 @@ def phasespace_movie(rundir):
         plt.contour(phase_space,levels=[0.1,1,2,3,5,10,100,1000,100000],extent=ext_stuff,colors='black',linestyles='dashed')
         plt.colorbar(phase_contour)
         ex_plot = plt.subplot(122)
-        
+
         plt.plot(ex[0,:])
         plt.ylim([-2,2])
         ex_plot.set_xlabel('Position [$\Delta x$]')
         ex_plot.set_ylabel('Electric Field')
         plt.tight_layout()
         plt.show()
-#2345        
+#2345
     my_path=os.getcwd()
-    working_dir=my_path+'/'+rundir    
+    working_dir=my_path+'/'+rundir
     phase_space_dir=working_dir+'/DIAG/Vx_x/'
     files=sorted(os.listdir(phase_space_dir))
     start=files[1].find('_x_')+3
@@ -1716,8 +1746,8 @@ def phasespace_movie(rundir):
     print(files[1][start:end])
     file_interval=int(files[1][start:end])
     file_max=(len(files)-1)*file_interval
-    
+
     interact(something,rundir=fixed(rundir),file_no=widgets.IntSlider(min=0,max=file_max,step=file_interval,value=0))
     #something(rundir=rundir,file_no=20)
 
-    
+
